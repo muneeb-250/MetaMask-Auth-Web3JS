@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Auth</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.1.1/web3.min.js"
+        integrity="sha512-C/TYwf93EQ6sPW4g3F9axNydQuQrAQCTOR1Gz65YK96MwrZ0KDn3qjNMAlXLYyjm84JELTYHinAfvUjbNC4fuQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+</head>
+
+<body>
+
+    <h1>Sign message using MetaMask</h1>
+    <button onclick="connectWallet()">Connect</button>
+    <p id="account"></p>
+
+    <button onclick="signMsg()">Signn message</button>
+    <h3 id="signed"></h3>
+
+    <button onclick="verify()">Verify address</button>
+    <h3 id="verified"></h3>
+    <script>
+
+        var account = null;
+        var sign = null;
+
+        if (!window.ethereum) {
+            alert('please install metamask')
+        }
+        const connectWallet = () => {
+            ethereum.request({ method: 'eth_requestAccounts' })
+                .then(accounts => {
+                    console.log(accounts)
+                    account = accounts[0]
+                    document.getElementById('account').innerHTML = account
+                })
+                .catch(err => console.log(err))
+            return account;
+        }
+
+        const signMsg = async () => {
+            let web3 = new Web3(window.ethereum)
+            sign = await web3.eth.personal.sign("this is the messge", account, "password")
+            document.getElementById('signed').innerHTML = sign
+        }
+        const verify = async () => {
+            let web3 = new Web3(window.ethereum)
+            let data = await web3.eth.personal.ecRecover("this is the messge", sign)
+            document.getElementById('verified').innerHTML = data
+        }
+    </script>
+</body>
+
+</html>
